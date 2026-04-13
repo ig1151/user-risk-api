@@ -1,4 +1,4 @@
-import { parsePhoneNumberFromString, getCountryCallingCode } from 'libphonenumber-js';
+import { parsePhoneNumberFromString } from 'libphonenumber-js';
 
 const DISPOSABLE_PREFIXES = ['1900','1976','1977','1978','1979'];
 
