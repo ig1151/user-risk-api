@@ -20,7 +20,7 @@ const docsHtml = `<!DOCTYPE html>
     .path { font-family: monospace; font-size: 1rem; font-weight: bold; }
     .desc { color: #666; font-size: 0.9rem; margin-top: 0.25rem; }
     pre { background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 6px; overflow-x: auto; font-size: 13px; }
-    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 8px; }
     th, td { text-align: left; padding: 8px; border: 1px solid #ddd; }
     th { background: #f5f5f5; }
   </style>
@@ -73,7 +73,6 @@ else allowSignup();</pre>
   "phone": { "score": 40, "valid": true, "is_voip": true },
   "ip": { "score": 30, "is_hosting": true, "threat_level": "medium" },
   "checks_performed": ["email", "phone", "ip"],
-  "recommendation": "verify",
   "latency_ms": 245
 }</pre>
 
@@ -83,6 +82,25 @@ else allowSignup();</pre>
     <tr><td>allow</td><td>0–39</td><td>Low risk — safe to allow signup</td></tr>
     <tr><td>verify</td><td>40–69</td><td>Medium risk — require OTP or extra verification</td></tr>
     <tr><td>block</td><td>70–100</td><td>High risk — reject or flag for review</td></tr>
+  </table>
+
+  <h2>Use cases</h2>
+  <table>
+    <tr><th>Use case</th><th>What to check</th><th>Action</th></tr>
+    <tr><td>Signup fraud prevention</td><td>email + phone + ip</td><td>Block if score &gt; 70</td></tr>
+    <tr><td>Checkout protection</td><td>email + ip</td><td>Require 3DS if score &gt; 40</td></tr>
+    <tr><td>Login anomaly detection</td><td>ip only</td><td>Force re-auth if score &gt; 50</td></tr>
+    <tr><td>Lead quality scoring</td><td>email + phone</td><td>Flag low quality if score &gt; 40</td></tr>
+    <tr><td>KYC pre-screening</td><td>email + phone + ip</td><td>Manual review if score &gt; 60</td></tr>
+  </table>
+
+  <h2>How scoring works</h2>
+  <p>Each signal is scored independently from 0–100, then averaged into a combined score:</p>
+  <table>
+    <tr><th>Signal</th><th>What raises the score</th></tr>
+    <tr><td>Email</td><td>Disposable domain (+40), no MX records (+30), invalid format (+50), role-based address (+10)</td></tr>
+    <tr><td>Phone</td><td>Fake or sequential digits (+60), invalid number (+40), VoIP number (+40), disposable prefix (+50)</td></tr>
+    <tr><td>IP</td><td>Tor exit node (+90), proxy (+70), VPN (+50), hosting/datacenter (+30)</td></tr>
   </table>
 
   <h2>OpenAPI Spec</h2>
